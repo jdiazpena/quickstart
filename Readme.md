@@ -3,6 +3,22 @@
 HPC virtually always have a job batch system. 
 The more resources are requested (CPU count, maximum length of job) the longer you wait for the job to start, so that the system is shared fairly.
 
+## configure request
+
+The idea of building everything each job helps ensure your latest code is being used -- otherwise it's confusing and you run for 3 days and oops it was not your desired code.
+
+The test.job script is programmatic to help avoid typos from repeated information. I.e. I set variables even for simple things.
+
+The test.job uses the oldest MPI nodes on SCC so that you can test quickly. For the actual simulations you'll want to use something faster. That's the test.job parameter
+
+```sh
+#$ -pe mpi_28_tasks_per_node 56 
+```
+
+where "448" is the maximum -- you may want to start with less than that. The smallest is 28, in steps of 28 up to 448. The "56" means requesting 56 CPU cores. We are "billed" by how many CPU cores * time used. Requesting more CPU cores means waiting longer for job to start as the system is shared.
+
+[HPC nodes available](https://www.bu.edu/tech/support/research/computing-resources/tech-summary/)
+
 ## library / compiler selection
 
 The HPC typically has quite old default compiler--the "module" system is used to load modern compilers and libraries.
