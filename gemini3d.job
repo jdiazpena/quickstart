@@ -1,12 +1,15 @@
 #!/bin/bash -l
 
+# NOTE: lines starting with "#$" are parameters for the HPC batcher.
+# otherwise, syntax is regular Bash shell script.
+
 # maximum time limit
-# Too big and you wait in line longer. 
+# Too big and you wait in line longer.
 # Too small and job stops before completion.
 #$ -l h_rt=01:00:00
 
-# MPI node(s) request 
-# adjust this per your simulation for multiple nodes, node size, etc. 
+# MPI node(s) request
+# adjust this per your simulation for multiple nodes, node size, etc.
 # see HPC batch docs for your system
 # smp 8 is single node, 8 CPU cores
 #$ -pe smp 8
@@ -86,4 +89,3 @@ simdir=${simroot}/mini3d_fang
 mkdir -p ${simdir}
 cp ${infile} ${simdir}/inputs/
 python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
-
