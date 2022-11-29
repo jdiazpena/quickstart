@@ -1,0 +1,89 @@
+#!/bin/bash -l
+
+# maximum time limit
+# Too big and you wait in line longer. 
+# Too small and job stops before completion.
+#$ -l h_rt=01:00:00
+
+# MPI node(s) request 
+# adjust this per your simulation for multiple nodes, node size, etc. 
+# see HPC batch docs for your system
+# smp 8 is single node, 8 CPU cores
+#$ -pe smp 8
+
+# batcher tells how many CPUs were assigned
+echo "NSLOTS = $NSLOTS"
+
+# stop on any Bash script error
+set -e
+# check all Bash script variables are assigned before use
+set -o nounset
+
+# arbitrary directory to install Gemini3D libraries in
+prefix=$HOME/libgem_gnu
+
+# arbitrary location to put code under
+rdir=$HOME/code
+
+# 1. load modules for compiler, python, cmake etc.
+source $HOME/gcc.sh
+
+# 2. build gemini3d/external libraries
+gesrc=${rdir}/gemext
+gebin=/tmp/build-gemext
+gebr=main
+if [[ -d ${gesrc} ]]; then
+  git -C ${gesrc} checkout ${gebr}
+  git -C ${gesrc} pull
+else
+  git -C ${rdir} clone https://github.com/gemini3d/external ${gesrc}
+fi
+cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
+cmake --build ${gebin}
+
+# 3. build Gemini3d
+gmsrc=${rdir}/joaquin-gemini3d
+gmbin=/tmp/build-gemini3d
+gmbr=FBI_branch
+if [[ -d ${gmsrc} ]]; then
+  git -C ${gmsrc} checkout ${gmbr}
+  git -C ${exsrc} pull
+else
+  git -C ${rdir} clone https://github.com/jdiazpena/gemini3d ${gmsrc}
+  git -C ${gmsrc} checkout ${gmbr}
+fi
+cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
+cmake --build ${gmbin}
+
+# 4. get simulation examples (or use your own)
+exsrc=${rdir}/gemci
+exbr=main
+exurl=https://github.com/gemini3d/gemci
+if [[ -d ${exsrc} ]]; then
+  git -C ${exsrc} checkout ${exbr}
+  git -C ${exsrc} pull
+else
+  git -C ${rdir} clone ${exurl} ${exsrc}
+fi
+
+# 5. setup PyGemini
+pysrc=${rdir}/pygemini
+pybr=main
+pyurl=https://github.com/gemini3d/pygemini
+if [[ -d ${pysrc} ]]; then
+  git -C ${pysrc} checkout ${pybr}
+  git -C ${pysrc} pull
+else
+  git -C ${rdir} clone ${pyurl} ${pysrc}
+fi
+python -m pip install -e ${pysrc}
+
+# 6. run Gemini3D simulation using PyGemini
+# simdir is where simulation output HDF5 files will be written as simulation runs
+infile=${exsrc}/cfg/hourly/mini3d_fang/config.nml
+simroot=$HOME/gemini3d_sims
+simdir=${simroot}/mini3d_fang
+mkdir -p ${simdir}
+cp ${infile} ${simdir}/inputs/
+python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
+
