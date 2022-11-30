@@ -42,7 +42,7 @@ if [[ -d ${gesrc} ]]; then
 else
   git -C ${rdir} clone ${geurl} ${gesrc}
 fi
-cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
+cmake -S ${gesrc} -B ${gebin} -Dbuild_mpi=on --install-prefix=${prefix}
 cmake --build ${gebin} --parallel
 
 # 3. build Gemini3d
