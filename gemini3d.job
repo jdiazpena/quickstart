@@ -35,11 +35,12 @@ source $HOME/gcc.sh
 gesrc=${rdir}/gemext
 gebin=/tmp/build-gemext
 gebr=main
+geurl=https://github.com/gemini3d/external
 if [[ -d ${gesrc} ]]; then
   git -C ${gesrc} checkout ${gebr}
   git -C ${gesrc} pull
 else
-  git -C ${rdir} clone https://github.com/gemini3d/external ${gesrc}
+  git -C ${rdir} clone ${geurl} ${gesrc}
 fi
 cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
 cmake --build ${gebin}
@@ -48,11 +49,12 @@ cmake --build ${gebin}
 gmsrc=${rdir}/joaquin-gemini3d
 gmbin=/tmp/build-gemini3d
 gmbr=FBI_branch
+gmurl=https://github.com/jdiazpena/gemini3d
 if [[ -d ${gmsrc} ]]; then
   git -C ${gmsrc} checkout ${gmbr}
-  git -C ${exsrc} pull
+  git -C ${gmsrc} pull
 else
-  git -C ${rdir} clone https://github.com/jdiazpena/gemini3d ${gmsrc}
+  git -C ${rdir} clone ${gmurl} ${gmsrc}
   git -C ${gmsrc} checkout ${gmbr}
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}

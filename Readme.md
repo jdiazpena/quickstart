@@ -1,18 +1,22 @@
 # HPC batch example for SCC
 
-HPC virtually always have a job batch system. 
+HPC virtually always have a job batch system.
 The more resources are requested (CPU count, maximum length of job) the longer you wait for the job to start, so that the system is shared fairly.
 
 ## configure request
 
-The idea of building everything each job helps ensure your latest code is being used -- otherwise it's confusing and you run for 3 days and oops it was not your desired code.
+The idea of building everything each job helps ensure your latest code is being used.
+Otherwise it's confusing and you run for 3 days and oops it was not your desired code.
 
-The test.job script is programmatic to help avoid typos from repeated information. I.e. I set variables even for simple things.
+The test.job script is programmatic to help avoid typos from repeated information.
+That is set variables even for simple things.
 
-The test.job uses the oldest MPI nodes on SCC so that you can test quickly. For the actual simulations you'll want to use something faster. That's the test.job parameter
+The test.job uses old MPI HPC nodes so that you can test with small simulations quickly.
+For the actual simulations you'll want to use something faster.
+That's the test.job parameter
 
 ```sh
-#$ -pe mpi_28_tasks_per_node 56 
+#$ -pe mpi_28_tasks_per_node 56
 ```
 
 where "448" is the maximum -- you may want to start with less than that. The smallest is 28, in steps of 28 up to 448. The "56" means requesting 56 CPU cores. We are "billed" by how many CPU cores * time used. Requesting more CPU cores means waiting longer for job to start as the system is shared.
@@ -26,6 +30,7 @@ Since the same modules are often used for many jobs, we create a script like ~/g
 For robustness, Gemini3D builds almost everything it uses, except the compiler and MPI library as those take tens of minutes to build.
 
 ## building Gemini3D
+
 Although our "test.job" rebuilds Gemini3D each time to be sure we're using the latest code, the very first time you're setting up Gemini3D you might wish to do this interactively in case of errors.
 This can be done simply by:
 
@@ -45,7 +50,7 @@ qsub test.job
 ## Checking job status
 
 ```sh
-watch qstat -u $(whoami) 
+watch qstat -u $(whoami)
 ```
 
 When the job is done, files are created by the batcher like:
@@ -55,6 +60,6 @@ test.job.e$JOB_ID
 test.job.o$JOB_ID
 ```
 
-I usually check the *.e$JOB_ID file to see if something crashed. 
+I usually check the *.e$JOB_ID file to see if something crashed.
 This file is small or empty if no errors happened.
 The *.o$JOB_ID file may be a megabyte or more of text with feedback from Gemini3D on what it was doing.
