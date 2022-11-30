@@ -8,12 +8,12 @@ The more resources are requested (CPU count, maximum length of job) the longer y
 The idea of building everything each job helps ensure your latest code is being used.
 Otherwise it's confusing and you run for 3 days and oops it was not your desired code.
 
-The test.job script is programmatic to help avoid typos from repeated information.
+The gemini3d.job script is programmatic to help avoid typos from repeated information.
 That is set variables even for simple things.
 
-The test.job uses old MPI HPC nodes so that you can test with small simulations quickly.
+The gemini3d.job uses old MPI HPC nodes so that you can test with small simulations quickly.
 For the actual simulations you'll want to use something faster.
-That's the test.job parameter
+That's the gemini3d.job parameter
 
 ```sh
 #$ -pe mpi_28_tasks_per_node 56
@@ -31,12 +31,11 @@ For robustness, Gemini3D builds almost everything it uses, except the compiler a
 
 ## building Gemini3D
 
-Although our "test.job" rebuilds Gemini3D each time to be sure we're using the latest code, the very first time you're setting up Gemini3D you might wish to do this interactively in case of errors.
+Although our "gemini3d.job" rebuilds Gemini3D each time to be sure we're using the latest code, the very first time you're setting up Gemini3D you might wish to do this interactively in case of errors.
 This can be done simply by:
 
 ```sh
-chmod +x test.job
-./test.job
+./gemini3d.job
 ```
 
 That will take 10 minutes or so the first time. After that, you just make it part of the HPC job and it will take less than a minute each time.
@@ -44,7 +43,7 @@ That will take 10 minutes or so the first time. After that, you just make it par
 ## starting a job
 
 ```sh
-qsub test.job
+qsub gemini3d.job
 ```
 
 ## Checking job status
@@ -56,8 +55,8 @@ watch qstat -u $(whoami)
 When the job is done, files are created by the batcher like:
 
 ```
-test.job.e$JOB_ID
-test.job.o$JOB_ID
+gemini3d.job.e$JOB_ID
+gemini3d.job.o$JOB_ID
 ```
 
 I usually check the *.e$JOB_ID file to see if something crashed.
