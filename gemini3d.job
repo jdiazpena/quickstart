@@ -43,7 +43,7 @@ else
   git -C ${rdir} clone ${geurl} ${gesrc}
 fi
 cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
-cmake --build ${gebin}
+cmake --build ${gebin} --parallel
 
 # 3. build Gemini3d
 gmsrc=${rdir}/joaquin-gemini3d
@@ -58,7 +58,7 @@ else
   git -C ${gmsrc} checkout ${gmbr}
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
-cmake --build ${gmbin}
+cmake --build ${gmbin} --parallel
 
 # 4. get simulation examples (or use your own)
 exsrc=${rdir}/gemci
