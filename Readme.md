@@ -9,6 +9,20 @@ Building all the Gemini3D associated libraries each batch job helps ensure your 
 
 The gemini3d.job script is programmatic to help avoid typos from repeated information.
 
+## Using BU SCC HPC
+
+The username and password are the same as every other bu.edu service.
+
+```sh
+ssh scc2.bu.edu
+```
+
+Another choice is the [OnDemand HPC web interface](https://www.bu.edu/tech/support/research/system-usage/connect-scc/scc-ondemand/),
+which allows use of a remote graphical desktop.
+
+To run a simulation that takes more than about 10 minutes uses the
+[SCC HPC batch system](https://www.bu.edu/tech/support/research/system-usage/running-jobs/submitting-jobs/).
+
 ## Select HPC nodes
 
 The gemini3d.job parameter:
