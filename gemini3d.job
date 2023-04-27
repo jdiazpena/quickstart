@@ -31,8 +31,12 @@ rdir=$HOME/code
 # arbitrary temporary directory to build under
 tdir=$(mktemp -d)
 
+# attempt to get script directory
+# https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
+sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 # 1. load modules for compiler, python, cmake etc.
-source $HOME/gcc.sh
+source ${sdir}/gcc.sh
 
 # 2. build gemini3d/external libraries
 gesrc=${rdir}/gemext
