@@ -28,12 +28,15 @@ prefix=$HOME/libgem_gnu
 # arbitrary location to put code under
 rdir=$HOME/code
 
+# arbitrary temporary directory to build under
+tdir=$(mktemp -d)
+
 # 1. load modules for compiler, python, cmake etc.
 source $HOME/gcc.sh
 
 # 2. build gemini3d/external libraries
 gesrc=${rdir}/gemext
-gebin=/tmp/build-gemext
+gebin=${tdir}/build-gemext
 gebr=main
 geurl=https://github.com/gemini3d/external
 if [[ -d ${gesrc} ]]; then
@@ -46,10 +49,10 @@ cmake -S ${gesrc} -B ${gebin} -Dbuild_mpi=on --install-prefix=${prefix}
 cmake --build ${gebin} --parallel
 
 # 3. build Gemini3d
-gmsrc=${rdir}/joaquin-gemini3d
-gmbin=/tmp/build-gemini3d
+gmsrc=${rdir}/gemini3d
+gmbin=${tdir}/build-gemini3d
 gmbr=FBI_branch
-gmurl=https://github.com/jdiazpena/gemini3d
+gmurl=https://github.com/gemini3d/gemini3d
 if [[ -d ${gmsrc} ]]; then
   git -C ${gmsrc} checkout ${gmbr}
   git -C ${gmsrc} pull
