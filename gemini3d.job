@@ -50,7 +50,10 @@ else
   git -C ${rdir} clone ${geurl} ${gesrc}
 fi
 cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
-cmake --build ${gebin} --parallel
+cmake --build ${gebin}
+# we didn't use parallel option as it makes build error messages all jumbled together
+# between projects
+# that is for easier human debugging and it builds almost as fast.
 
 # 3. build Gemini3d
 gmsrc=${rdir}/gemini3d
