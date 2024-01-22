@@ -63,12 +63,13 @@ else
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
 cmake --build ${gmbin} --parallel
+cmake --install ${gmbin}
 
 # 4. get simulation examples (or use your own)
 # source ${sdir}/gemci.sh
 
 # 5. setup PyGemini
-# source ${sdir}/pygemini.sh
+source ${sdir}/pygemini.sh
 
 # 6. run Gemini3D simulation using PyGemini
-# source ${sdir}/run.sh
+source ${sdir}/run.sh
