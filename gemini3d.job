@@ -26,12 +26,12 @@ set -o nounset
 # arbitrary directory to install Gemini3D libraries in
 [[ -v prefix ]] || prefix=$HOME/libgem_gnu
 
-# arbitrary location to put code under
-[[ -v top ]] || top=$HOME/code
-
 # attempt to get script directory
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# arbitrary location to put code under
+[[ -v top ]] || top=$(realpath ${sdir}/..)
 
 # 1. load modules for compiler, python, cmake etc.
 source ${sdir}/gcc.sh

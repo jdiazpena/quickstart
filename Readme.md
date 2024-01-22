@@ -47,12 +47,6 @@ For robustness, Gemini3D builds almost everything it uses.
 
 Although our "gemini3d.job" rebuilds Gemini3D each time to be sure we're using the latest code, when setting up Gemini3D you might wish to do this interactively in case of errors.
 
-To pick a directory to store code and data in (consider disk quota) set shell variable
-
-```sh
-export top=/projectnb/group
-```
-
 Try running interactively:
 
 ```sh
