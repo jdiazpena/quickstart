@@ -31,7 +31,7 @@ set -o nounset
 sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # arbitrary location to put code under
-[[ -v top ]] || top=$(realpath ${sdir}/..)
+[[ -v top ]] || top=${sdir}
 
 # 1. load modules for compiler, python, cmake etc.
 source ${sdir}/gcc.sh
