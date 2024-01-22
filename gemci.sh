@@ -1,11 +1,11 @@
-[[ -v rdir ]] || rdir=$HOME/code
+[[ -v top ]] || top=$HOME/code
 
-exsrc=${rdir}/gemci
+exsrc=${top}/gemci
 exbr=main
 exurl=https://github.com/gemini3d/gemci
 if [[ -d ${exsrc} ]]; then
   git -C ${exsrc} switch ${exbr}
   git -C ${exsrc} pull
 else
-  git -C ${rdir} clone ${exurl} ${exsrc}
+  git -C ${top} clone ${exurl} ${exsrc}
 fi

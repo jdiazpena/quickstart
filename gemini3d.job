@@ -24,10 +24,10 @@ set -e
 set -o nounset
 
 # arbitrary directory to install Gemini3D libraries in
-prefix=$HOME/libgem_gnu
+[[ -v prefix ]] || prefix=$HOME/libgem_gnu
 
 # arbitrary location to put code under
-rdir=$HOME/code
+[[ -v top ]] || top=$HOME/code
 
 # attempt to get script directory
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
@@ -37,7 +37,7 @@ sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source ${sdir}/gcc.sh
 
 # 2. build gemini3d/external libraries
-gesrc=${rdir}/gemext
+gesrc=${top}/gemext
 gebin=${gesrc}/build
 gebr=main
 geurl=https://github.com/gemini3d/external
@@ -45,12 +45,12 @@ if [[ -d ${gesrc} ]]; then
   git -C ${gesrc} switch ${gebr}
   git -C ${gesrc} pull
 else
-  git -C ${rdir} clone ${geurl} ${gesrc}
+  git -C ${top} clone ${geurl} ${gesrc}
 fi
 cmake -Dbindir=${gebin} -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
 
 # 3. build Gemini3d
-gmsrc=${rdir}/gemini3d
+gmsrc=${top}/gemini3d
 gmbin=${gmsrc}/build
 gmbr=main
 gmurl=https://github.com/gemini3d/gemini3d
@@ -58,7 +58,7 @@ if [[ -d ${gmsrc} ]]; then
   git -C ${gmsrc} switch ${gmbr}
   git -C ${gmsrc} pull
 else
-  git -C ${rdir} clone ${gmurl} ${gmsrc}
+  git -C ${top} clone ${gmurl} ${gmsrc}
   git -C ${gmsrc} switch ${gmbr}
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}

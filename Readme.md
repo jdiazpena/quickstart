@@ -46,29 +46,20 @@ For robustness, Gemini3D builds almost everything it uses.
 ## Run HPC job
 
 Although our "gemini3d.job" rebuilds Gemini3D each time to be sure we're using the latest code, when setting up Gemini3D you might wish to do this interactively in case of errors.
-This can be done simply by:
+
+To pick a directory to store code and data in (consider disk quota) set shell variable
+
+```sh
+export top=/projectnb/group
+```
+
+Try running interactively:
 
 ```sh
 ./gemini3d.job
 ```
 
-On SCC, you may get an error message like:
-
-> Gemini3D requires MPI-3 Fortran support.
-> Please build MPI and set environment variable MPI_ROOT=~/openmpi so Gemini3D and other progams can find this new OpenMP.
-
-```sh
-cmake -Dprefix=~/openmpi -P /usr3/graduate/mhirsch/code/gemext/scripts/build_openmpi.cmake
-```
-
-In this case, run that command to build OpenMPI and edit the file "gcc.sh" to add the line to use your custom-built OpenMPI:
-
-```sh
-export MPI_ROOT=~/openmpi
-```
-
-That will take 10 minutes or so the first time.
-After that, submit the same scripts as an HPC job:
+Submit the same scripts as an HPC job:
 
 ```sh
 qsub gemini3d.job
@@ -90,3 +81,23 @@ gemini3d.job.o$JOB_ID
 Check the *.e$JOB_ID file to see if something crashed.
 This file is small or empty if no errors happened.
 The *.o$JOB_ID file may be a megabyte or more of text with feedback from Gemini3D on what it was doing.
+
+
+## Troubleshooting
+
+On SCC, you may get an error message like:
+
+> Gemini3D requires MPI-3 Fortran support.
+> Please build MPI and set environment variable MPI_ROOT=~/openmpi so Gemini3D and other progams can find this new OpenMP.
+
+```sh
+cmake -Dprefix=~/openmpi -P /usr3/graduate/mhirsch/code/gemext/scripts/build_openmpi.cmake
+```
+
+In this case, run that command to build OpenMPI and edit the file "gcc.sh" to add the line to use your custom-built OpenMPI:
+
+```sh
+export MPI_ROOT=~/openmpi
+```
+
+That will take 10 minutes or so the first time.
