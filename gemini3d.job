@@ -64,33 +64,10 @@ cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
 cmake --build ${gmbin} --parallel
 
 # 4. get simulation examples (or use your own)
-# exsrc=${rdir}/gemci
-# exbr=main
-# exurl=https://github.com/gemini3d/gemci
-# if [[ -d ${exsrc} ]]; then
-#   git -C ${exsrc} switch ${exbr}
-#   git -C ${exsrc} pull
-# else
-#   git -C ${rdir} clone ${exurl} ${exsrc}
-# fi
+# source ${sdir}/gemci.sh
 
 # 5. setup PyGemini
-pysrc=${rdir}/pygemini
-pybr=main
-pyurl=https://github.com/gemini3d/pygemini
-if [[ -d ${pysrc} ]]; then
-  git -C ${pysrc} switch ${pybr}
-  git -C ${pysrc} pull
-else
-  git -C ${rdir} clone ${pyurl} ${pysrc}
-fi
-python -m pip install -e ${pysrc}
+# source ${sdir}/pygemini.sh
 
 # 6. run Gemini3D simulation using PyGemini
-# simdir is where simulation output HDF5 files will be written as simulation runs
-# infile=${exsrc}/cfg/hourly/mini3d_fang/config.nml
-# simroot=$HOME/gemini3d_sims
-# simdir=${simroot}/mini3d_fang
-# mkdir -p ${simdir}
-# cp ${infile} ${simdir}/inputs/
-# python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
+# source ${sdir}/run.sh
