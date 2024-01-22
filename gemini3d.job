@@ -38,15 +38,16 @@ source ${sdir}/gcc.sh
 
 # 2. build gemini3d/external libraries
 gesrc=${rdir}/gemext
+gebin=${gesrc}/build
 gebr=main
 geurl=https://github.com/gemini3d/external
 if [[ -d ${gesrc} ]]; then
-  git -C ${gesrc} checkout ${gebr}
+  git -C ${gesrc} switch ${gebr}
   git -C ${gesrc} pull
 else
   git -C ${rdir} clone ${geurl} ${gesrc}
 fi
-cmake -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
+cmake -Dbindir=${gebin} -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
 
 # 3. build Gemini3d
 gmsrc=${rdir}/gemini3d
