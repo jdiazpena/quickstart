@@ -6,7 +6,8 @@
 # maximum time limit
 # Too big and you wait in line longer.
 # Too small and job stops before completion.
-#$ -l h_rt=01:00:00
+# the time duration is HH:MM:SS
+#$ -l h_rt=12:00:00
 
 # MPI node(s) request
 # adjust this per your simulation for multiple nodes, node size, etc.
@@ -28,9 +29,6 @@ prefix=$HOME/libgem_gnu
 # arbitrary location to put code under
 rdir=$HOME/code
 
-# arbitrary temporary directory to build under
-tdir=$(mktemp -d)
-
 # attempt to get script directory
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -40,7 +38,6 @@ source ${sdir}/gcc.sh
 
 # 2. build gemini3d/external libraries
 gesrc=${rdir}/gemext
-gebin=${tdir}/build-gemext
 gebr=main
 geurl=https://github.com/gemini3d/external
 if [[ -d ${gesrc} ]]; then
@@ -49,44 +46,40 @@ if [[ -d ${gesrc} ]]; then
 else
   git -C ${rdir} clone ${geurl} ${gesrc}
 fi
-cmake -S ${gesrc} -B ${gebin} --install-prefix=${prefix}
-cmake --build ${gebin}
-# we didn't use parallel option as it makes build error messages all jumbled together
-# between projects
-# that is for easier human debugging and it builds almost as fast.
+cmake -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
 
 # 3. build Gemini3d
 gmsrc=${rdir}/gemini3d
-gmbin=${tdir}/build-gemini3d
-gmbr=FBI_branch
+gmbin=${gmsrc}/build
+gmbr=main
 gmurl=https://github.com/gemini3d/gemini3d
 if [[ -d ${gmsrc} ]]; then
-  git -C ${gmsrc} checkout ${gmbr}
+  git -C ${gmsrc} switch ${gmbr}
   git -C ${gmsrc} pull
 else
   git -C ${rdir} clone ${gmurl} ${gmsrc}
-  git -C ${gmsrc} checkout ${gmbr}
+  git -C ${gmsrc} switch ${gmbr}
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
 cmake --build ${gmbin} --parallel
 
 # 4. get simulation examples (or use your own)
-exsrc=${rdir}/gemci
-exbr=main
-exurl=https://github.com/gemini3d/gemci
-if [[ -d ${exsrc} ]]; then
-  git -C ${exsrc} checkout ${exbr}
-  git -C ${exsrc} pull
-else
-  git -C ${rdir} clone ${exurl} ${exsrc}
-fi
+# exsrc=${rdir}/gemci
+# exbr=main
+# exurl=https://github.com/gemini3d/gemci
+# if [[ -d ${exsrc} ]]; then
+#   git -C ${exsrc} switch ${exbr}
+#   git -C ${exsrc} pull
+# else
+#   git -C ${rdir} clone ${exurl} ${exsrc}
+# fi
 
 # 5. setup PyGemini
 pysrc=${rdir}/pygemini
 pybr=main
 pyurl=https://github.com/gemini3d/pygemini
 if [[ -d ${pysrc} ]]; then
-  git -C ${pysrc} checkout ${pybr}
+  git -C ${pysrc} switch ${pybr}
   git -C ${pysrc} pull
 else
   git -C ${rdir} clone ${pyurl} ${pysrc}
@@ -95,9 +88,9 @@ python -m pip install -e ${pysrc}
 
 # 6. run Gemini3D simulation using PyGemini
 # simdir is where simulation output HDF5 files will be written as simulation runs
-infile=${exsrc}/cfg/hourly/mini3d_fang/config.nml
-simroot=$HOME/gemini3d_sims
-simdir=${simroot}/mini3d_fang
-mkdir -p ${simdir}
-cp ${infile} ${simdir}/inputs/
-python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
+# infile=${exsrc}/cfg/hourly/mini3d_fang/config.nml
+# simroot=$HOME/gemini3d_sims
+# simdir=${simroot}/mini3d_fang
+# mkdir -p ${simdir}
+# cp ${infile} ${simdir}/inputs/
+# python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
