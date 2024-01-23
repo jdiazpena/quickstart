@@ -29,6 +29,9 @@ set -o nounset
 # attempt to get script directory
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# for some HPC batch systems, the above may not work as it copies this script to a temporary directory
+# this fallback works if qsub was run from this script's directory
+[[ ! -f ${sdir}/gcc.sh ]] && sdir=$PWD
 
 # arbitrary location to put code under
 [[ -v top ]] || top=${sdir}
