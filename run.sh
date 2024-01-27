@@ -3,9 +3,12 @@
 # exsrc= defined like in gemci.sh
 # gmbin= defined like in gemini3d.job
 
-infile=${exsrc}/cfg/hourly/mini3d_fang/config.nml
-simroot=$HOME/gemini3d_sims
-simdir=${simroot}/mini3d_fang
-mkdir -p ${simdir}
-cp ${infile} ${simdir}/inputs/
-python -m gemini3d.run ${simdir} -gemexe ${gmbin}/gemini.bin
+rootdir=/projectnb/semetergrp/gemini3dfbi
+
+configdir=${rootdir}/configfiles/said/
+simroot=${rootdir}/gemini3d_sims
+simdir=${simroot}/240127_said_v_30m075JnoBG_512x512x512
+
+python -m gemini3d.run ${configdir} ${simdir} -gemexe ${prefix}/gemini.bin
+
+CMAKE_PREFIX_PATH=${prefix} mpirun -np 512 ${prefix}/bin/gemini.bin ${simdir}

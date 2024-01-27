@@ -1,5 +1,7 @@
 #!/bin/bash -l
 
+#!/bin/bash -l
+
 # NOTE: lines starting with "#$" are parameters for the HPC batcher.
 # otherwise, syntax is regular Bash shell script.
 
@@ -7,13 +9,12 @@
 # Too big and you wait in line longer.
 # Too small and job stops before completion.
 # the time duration is HH:MM:SS
-#$ -l h_rt=12:00:00
+#$ -l h_rt=48:00:00
 
 # MPI node(s) request
 # adjust this per your simulation for multiple nodes, node size, etc.
 # see HPC batch docs for your system
-# smp 8 is single node, 8 CPU cores
-#$ -pe smp 8
+#$ -pe mpi_64_tasks_per_node 512
 
 # batcher tells how many CPUs were assigned
 echo "NSLOTS = $NSLOTS"
@@ -34,7 +35,7 @@ sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 [[ ! -f ${sdir}/gcc.sh ]] && sdir=$PWD
 
 # arbitrary location to put code under
-[[ -v top ]] || top=${sdir}
+[[ -v top ]] || top=${sdir}/..
 
 # 1. load modules for compiler, python, cmake etc.
 source ${sdir}/gcc.sh
@@ -56,7 +57,7 @@ cmake -Dbindir=${gebin} -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
 gmsrc=${top}/gemini3d
 gmbin=${gmsrc}/build
 gmbr=main
-gmurl=https://github.com/gemini3d/gemini3d
+gmurl=https://github.com/jdiazpena/gemini3d
 if [[ -d ${gmsrc} ]]; then
   git -C ${gmsrc} switch ${gmbr}
   git -C ${gmsrc} pull
@@ -66,13 +67,13 @@ else
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
 cmake --build ${gmbin} --parallel
-cmake --install ${gmbin}
+# cmake --install ${gmbin}
 
 # 4. get simulation examples (or use your own)
 # source ${sdir}/gemci.sh
 
 # 5. setup PyGemini
-source ${sdir}/pygemini.sh
+# source ${sdir}/pygemini.sh
 
 # 6. run Gemini3D simulation using PyGemini
 source ${sdir}/run.sh
