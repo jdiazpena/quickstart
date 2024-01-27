@@ -1,7 +1,5 @@
 #!/bin/bash -l
 
-#!/bin/bash -l
-
 # NOTE: lines starting with "#$" are parameters for the HPC batcher.
 # otherwise, syntax is regular Bash shell script.
 
@@ -9,11 +7,12 @@
 # Too big and you wait in line longer.
 # Too small and job stops before completion.
 # the time duration is HH:MM:SS
-#$ -l h_rt=48:00:00
+#$ -l h_rt=12:00:00
 
 # MPI node(s) request
 # adjust this per your simulation for multiple nodes, node size, etc.
 # see HPC batch docs for your system
+# smp 8 is single node, 8 CPU cores
 #$ -pe mpi_64_tasks_per_node 512
 
 # batcher tells how many CPUs were assigned
@@ -25,23 +24,20 @@ set -e
 set -o nounset
 
 # arbitrary directory to install Gemini3D libraries in
-[[ -v prefix ]] || prefix=$HOME/libgem_gnu
+prefix=/projectnb/semetergrp/gemini3dfbi/libgem_gnu
+
+# arbitrary location to put code under
+rdir=${prefix}/../code
 
 # attempt to get script directory
 # https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 sdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# for some HPC batch systems, the above may not work as it copies this script to a temporary directory
-# this fallback works if qsub was run from this script's directory
-[[ ! -f ${sdir}/gcc.sh ]] && sdir=$PWD
-
-# arbitrary location to put code under
-[[ -v top ]] || top=${sdir}/..
 
 # 1. load modules for compiler, python, cmake etc.
 source ${sdir}/gcc.sh
 
 # 2. build gemini3d/external libraries
-gesrc=${top}/gemext
+gesrc=${rdir}/gemext
 gebin=${gesrc}/build
 gebr=main
 geurl=https://github.com/gemini3d/external
@@ -49,12 +45,12 @@ if [[ -d ${gesrc} ]]; then
   git -C ${gesrc} switch ${gebr}
   git -C ${gesrc} pull
 else
-  git -C ${top} clone ${geurl} ${gesrc}
+  git -C ${rdir} clone ${geurl} ${gesrc}
 fi
 cmake -Dbindir=${gebin} -Dprefix=${prefix} -P ${gesrc}/build-online.cmake
 
 # 3. build Gemini3d
-gmsrc=${top}/gemini3d
+gmsrc=${rdir}/gemini3d
 gmbin=${gmsrc}/build
 gmbr=main
 gmurl=https://github.com/jdiazpena/gemini3d
@@ -62,12 +58,11 @@ if [[ -d ${gmsrc} ]]; then
   git -C ${gmsrc} switch ${gmbr}
   git -C ${gmsrc} pull
 else
-  git -C ${top} clone ${gmurl} ${gmsrc}
+  git -C ${rdir} clone ${gmurl} ${gmsrc}
   git -C ${gmsrc} switch ${gmbr}
 fi
 cmake -S ${gmsrc} -B ${gmbin} -DCMAKE_PREFIX_PATH=${prefix}
 cmake --build ${gmbin} --parallel
-# cmake --install ${gmbin}
 
 # 4. get simulation examples (or use your own)
 # source ${sdir}/gemci.sh
